@@ -1,0 +1,15 @@
+node_modules/
+.next/
+out/
+dist/
+work/
+.venv/
+__pycache__/
+*.pyc
+.env
+data/
+*.tar.gz
+*.tsbuildinfo
+.env.*
+!.env.example
+.pytest_cache/

@@ -1,0 +1,12 @@
+'use client';
+import {useEffect,useState} from 'react';
+import {ArrowLeftRight,CloudOff,LoaderCircle} from 'lucide-react';
+import {api,type Connection} from '@/lib/api';
+import type {Project} from '@/lib/types';
+export default function CompositeCompare({project,connection,onUpload}:{project:Project;connection:Connection;onUpload:()=>void}){
+ const [images,setImages]=useState<string[]>([]),[error,setError]=useState(''),[position,setPosition]=useState(50);
+ useEffect(()=>{if(project.id==='demo')return;let active=true;const urls:string[]=[];Promise.all(['baseline','monitoring'].map(async p=>{const r=await api(`/projects/${project.id}/imagery/${p}`,connection);const url=URL.createObjectURL(await r.blob());urls.push(url);return url})).then(values=>{if(active)setImages(values)}).catch(e=>{if(active)setError(e.message)});return()=>{active=false;urls.forEach(u=>URL.revokeObjectURL(u))}},[project.id,project.result.finished_at,connection]);
+ if(project.id==='demo'||error)return <div className="composite-empty"><CloudOff size={30} strokeWidth={1.3}/><h3>{error?'Composite imagery unavailable':'Compare dated vegetation observations'}</h3><p>{error||'Run an analysis on your own project to compare cloud-masked baseline and monitoring NDVI composites.'}</p>{project.id==='demo'&&<button className="text-button" onClick={onUpload}>Upload your project →</button>}</div>;
+ if(images.length<2)return <div className="composite-empty"><LoaderCircle size={24} className="spin"/>Loading source composites…</div>;
+ return <div className="compare-container"><div className="compare-stage"><img src={images[1]} alt="Monitoring period median NDVI composite"/><img className="baseline-image" src={images[0]} alt="Baseline period median NDVI composite" style={{clipPath:`inset(0 ${100-position}% 0 0)`}}/><div className="compare-line" style={{left:`${position}%`}}><span><ArrowLeftRight size={15}/></span></div><div className="compare-labels"><span>BASELINE<br/>{project.settings.baseline_start.slice(0,7)} — {project.settings.baseline_end.slice(0,7)}</span><span>MONITORING<br/>{project.settings.monitoring_start.slice(0,7)} — {project.settings.monitoring_end.slice(0,7)}</span></div><input aria-label="Before and after comparison position" type="range" min="0" max="100" value={position} onChange={e=>setPosition(Number(e.target.value))}/></div><div className="ndvi-legend"><i/>Lower NDVI <span/> Higher NDVI · Transparent pixels have no data</div></div>
+}

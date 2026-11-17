@@ -1,0 +1,7 @@
+FICTIONAL TEST DOCUMENT — not a registry project or verified assessment.
+
+The test project boundary encompasses approximately 121 hectares of tropical
+forest in Acre, Brazil. Forest vegetation is expected to remain dominant across
+the monitoring period. Annual satellite monitoring is used to screen for
+possible forest disturbance. These statements are synthetic and supplied only
+to exercise document extraction and the review workflow.
